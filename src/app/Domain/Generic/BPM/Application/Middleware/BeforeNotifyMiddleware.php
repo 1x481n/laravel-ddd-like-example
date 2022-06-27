@@ -49,7 +49,7 @@ class BeforeNotifyMiddleware
      *
      * @return bool
      */
-    private function checkSign()
+    private function checkSign(): bool
     {
         return true;
     }

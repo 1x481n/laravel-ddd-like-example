@@ -29,7 +29,6 @@ class ProcessRunningService extends BaseService
     /**
      * 发起流程
      *
-     * @link http://172.16.4.177:7700/#/view/W2o5a1XD
      *
      * @desc 表单中的上下文动态值，先舍弃中台配置规则【回调函数，回调url】等较为复杂的实现方案。
      * 新增用法（建议采用）：SourceHandler的继承类中，同时选择实现 WithContextFormMap，根据流程各节点表单规则实现
