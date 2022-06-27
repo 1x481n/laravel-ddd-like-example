@@ -260,7 +260,6 @@ abstract class Gateway
         return $data;
     }
 
-
     /**
      * @param $method
      * @param $parameters
@@ -284,6 +283,9 @@ abstract class Gateway
         return implode(PHP_EOL, $this->httpMessage);
     }
 
+    /**
+     * @throws Throwable
+     */
     public function __destruct()
     {
         $this->terminate();
@@ -381,6 +383,7 @@ abstract class Gateway
      * 告警
      *
      * @return void
+     * @throws Throwable
      */
     private function alarm(): void
     {
@@ -406,6 +409,7 @@ abstract class Gateway
      * 终止
      *
      * @return void
+     * @throws Throwable
      */
     private function terminate(): void
     {
