@@ -13,6 +13,7 @@ namespace App\Domain\Generic\BPM\Services;
 
 use App\Domain\Generic\BPM\Models\BPMTransaction;
 use Cache;
+use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
 
@@ -37,9 +38,9 @@ class Engine
      *
      * @param BPMTransaction $bpmTransaction
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
-    public function startProcess(BPMTransaction $bpmTransaction)
+    public function startProcess(BPMTransaction $bpmTransaction): array
     {
         try {
             $transactionSnapshot = $bpmTransaction->transaction_snapshot ?? [];
@@ -123,7 +124,7 @@ class Engine
      * bpm授权或续租
      *
      * @return HttpClient
-     * @throws \Exception
+     * @throws Exception
      */
     public function authorize(): HttpClient
     {
@@ -134,7 +135,7 @@ class Engine
             extract($this->httpClient->getAccessToken()['data'] ?? []);
 
             if (!isset($accessToken, $expireTime)) {
-                throw new \Exception('access_token获取失败！');
+                throw new Exception('access_token获取失败！');
             }
 
             $this->httpClient->accessToken = $accessToken;
@@ -148,7 +149,7 @@ class Engine
      * @param $method
      * @param $parameters
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function __call($method, $parameters)
     {

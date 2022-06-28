@@ -20,6 +20,17 @@ use Throwable;
 
 class BPMController extends Controller
 {
+
+    public function test()
+    {
+
+        dispatch(function (){
+            \Log::debug('bpm.test');
+        });
+
+        return 'bpm.test';
+    }
+
     /**
      * 回调用通知
      *

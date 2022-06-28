@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Route;
 
 // 业务流程管理
 Route::group(['prefix' => 'bpm', 'namespace' => '\\App\\Http\\Controllers\\Generic'], function () {
-    Route::get('/', 'BPMController@index');
+    Route::get('/test', 'BPMController@test');
 
     // BPM回调通知
     Route::post('notify', ['uses' => 'BPMController@notify', 'middleware' => BeforeNotifyMiddleware::class, 'as' => 'bpm.notify']);
