@@ -30,6 +30,6 @@ class StartProcessJob implements ShouldQueue
      */
     public function handle()
     {
-        //
+        \Log::info('StartProcessJob');
     }
 }

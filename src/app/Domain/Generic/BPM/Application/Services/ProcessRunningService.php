@@ -54,7 +54,8 @@ class ProcessRunningService extends BaseService
      * ]
      * @throws Exception
      */
-    #[ArrayShape(['bpm_transaction_sn' => "\Illuminate\Database\Eloquent\HigherOrderBuilderProxy|mixed|string", 'bpm_result' => "array"])] public function startProcess
+    #[ArrayShape(['bpm_transaction_sn' => "\Illuminate\Database\Eloquent\HigherOrderBuilderProxy|mixed|string", 'bpm_result' => "array"])]
+    public function startProcess
     (
         BusinessType  $bizType,
         SourceHandler $sourceHandler,
@@ -117,8 +118,7 @@ class ProcessRunningService extends BaseService
 
         if ($this->async) {
             // 异步
-            //dispatch(new QueueableClosure($processing));
-            dispatch(new SerializableClosure($processing));
+            dispatch($processing);
             $bpmResult = [
                 'code' => 0,
                 'message' => '流程发起中，请留意后续结果...'
@@ -127,7 +127,7 @@ class ProcessRunningService extends BaseService
             // 同步
             $bpmResult = $processing();
             if ($bpmResult['code'] != 0) {
-                abort(500, 'java工作流服务：' . $bpmResult['message'] ?? '未知错误！');
+                abort(500, '工作流服务：' . $bpmResult['message'] ?? '未知错误！');
             }
         }
 
