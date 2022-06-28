@@ -301,18 +301,11 @@ abstract class Gateway
     {
         return implode(PHP_EOL, array_map(
                 function ($v, $k) {
-                    switch (true) {
-                        case is_array($v):
-                            //$v = implode(',', $v);
-                            $v = json_encode($v, JSON_UNESCAPED_UNICODE);
-                            break;
-                        case is_object($v):
-                            $v = json_encode($v, JSON_UNESCAPED_UNICODE);
-                            break;
-                        case is_bool($v):
-                            $v = $v ? 'true' : 'false';
-                            break;
-                    }
+                    $v = match (true) {
+                        is_array($v), is_object($v) => json_encode($v, JSON_UNESCAPED_UNICODE),
+                        is_bool($v) => $v ? 'true' : 'false',
+                        default => $v,
+                    };
                     return sprintf("%s: %s", $k, $v);
                 },
                 $data,
