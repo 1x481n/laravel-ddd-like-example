@@ -26,6 +26,16 @@ class Engine
 
     public const PROCESSING = 'processing';
 
+    // 允许使用的变量
+    private const ALLOWED_VARIABLES = [
+        // 动态变量先行，偏移始终为0
+        'dynamicVar',
+        // 从下一个环节开始所有需要角色转人的变量
+        'nextRoleVars',
+        // 抄送人变量
+        'copyRoleVar'
+    ];
+
     private HttpClient $httpClient;
 
     public function __construct(HttpClient $httpClient)
@@ -70,7 +80,7 @@ class Engine
                 $executeFirstNode
             );
             $startData['transaction_no'] = $result['data']['processInstanceId'] ?? '';
-            if($startData['transaction_no']){
+            if ($startData['transaction_no']) {
                 $transactionState = self::PROCESSING;
             }
             return $result;
@@ -128,9 +138,7 @@ class Engine
      */
     public function authorize(): HttpClient
     {
-        $this->httpClient->accessToken = Cache::get('bpm:access_token');
-
-        if (!$this->httpClient->accessToken = Cache::get('bpm:access_token')) {
+        if (!$this->httpClient->accessToken = (string)Cache::get('bpm:access_token')) {
 
             extract($this->httpClient->getAccessToken()['data'] ?? []);
 
@@ -143,6 +151,72 @@ class Engine
         }
 
         return $this->httpClient;
+    }
+
+    /**
+     * 处理表单
+     *
+     * @param BPMTransaction $bpmTransaction
+     * @param array $varData
+     * @param $formData
+     * @return void
+     * @throws Exception
+     */
+    public function handleForm(BPMTransaction $bpmTransaction, array $varData, &$formData): void
+    {
+        $sourceHandler = $bpmTransaction->source_handler;
+
+        $nodeId = $varData['nodeId'] ?? '';
+
+        if ($sourceHandler instanceof ShouldValidateInputForm) {
+            $sourceHandler->validateInputForm($formData);
+        }
+
+        if ($sourceHandler instanceof WithContextFormMap) {
+            $formData = array_merge(
+                $formData, $sourceHandler->mapFormFields($nodeId, $bpmTransaction)
+            );
+        }
+    }
+
+    /**
+     * 处理变量规则
+     *
+     * @param BPMTransaction $bpmTransaction
+     * @param array $varData
+     * @param array $ruleClosures
+     * @return void
+     */
+    public function handleVariables(BPMTransaction $bpmTransaction, array $varData, array $ruleClosures): void
+    {
+        // 流程节点ID
+        $nodeId = $varData['nodeId'] ?? '';
+        // 默认取发起时指定的门店/大区
+        $storeId = $bpmTransaction->store_id;
+        $areaId = $bpmTransaction->area_id;
+        // 来源处理程序
+        $sourceHandler = $bpmTransaction->source_handler;
+
+        // 处理允许的变量规则
+        collect($varData)->sortBy(function ($varVal, $varName) {
+            return array_flip(self::ALLOWED_VARIABLES)[$varName] ?? -1;
+        })->each(function ($varVal, $varName) use ($bpmTransaction, $sourceHandler, $ruleClosures, $nodeId, &$storeId, &$areaId) {
+            if (!in_array($varName, self::ALLOWED_VARIABLES)) {
+                return;
+            }
+            if ($varName == self::ALLOWED_VARIABLES[0]) {
+                // 流程运行中需要动态指定的门店/区域
+                if ($sourceHandler instanceof ShouldSpecifyStore) {
+                    $storeId = $sourceHandler->getSpecifiedStoreId($nodeId, $bpmTransaction, $varVal);
+                    $areaId = $sourceHandler->getSpecifiedAreaId($nodeId, $bpmTransaction, $varVal);
+                }
+            } else {
+                $ruleClosure = $ruleClosures[$varName . 'Rule'] ?? null;
+                if ($ruleClosure instanceof \Closure) {
+                    $ruleClosure($varVal, $storeId, $areaId);
+                }
+            }
+        });
     }
 
     /**

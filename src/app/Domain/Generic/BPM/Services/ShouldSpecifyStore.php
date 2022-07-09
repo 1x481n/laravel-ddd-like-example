@@ -18,18 +18,20 @@ interface ShouldSpecifyStore
     /**
      * 获取指定门店ID
      *
-     * @param string $nodeId
-     * @param BPMTransaction $bpmTransaction
-     * @return mixed
+     * @param string $nodeId 流程节点ID
+     * @param BPMTransaction $bpmTransaction 本地bpm交易模型，可结合source_id等字段，作逻辑处理
+     * @param integer|string|null $dynamicVar 动态变量
+     * @return int 返回当前nodeId下，需要特殊指定的门店id，可结合已经约定并配置的动态变量和自己场景上下文生成。
      */
-    public function getSpecifiedStoreId(string $nodeId, BPMTransaction $bpmTransaction): int;
+    public function getSpecifiedStoreId(string $nodeId, BPMTransaction $bpmTransaction, int|string $dynamicVar = null): int;
 
     /**
      * 获取指定区域ID
      *
-     * @param string $nodeId
-     * @param BPMTransaction $bpmTransaction
-     * @return int
+     * @param string $nodeId 流程节点ID
+     * @param BPMTransaction $bpmTransaction 本地bpm交易模型，可结合source_id等字段，作逻辑处理
+     * @param integer|string|null $dynamicVar 动态变量
+     * @return int 返回当前nodeId下，需要特殊指定的区域id，可结合已经约定并配置的动态变量和自己场景上下文生成。
      */
-    public function getSpecifiedAreaId(string $nodeId, BPMTransaction $bpmTransaction): int;
+    public function getSpecifiedAreaId(string $nodeId, BPMTransaction $bpmTransaction, int|string $dynamicVar = null): int;
 }

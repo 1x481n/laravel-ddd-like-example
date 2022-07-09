@@ -13,6 +13,7 @@ namespace App\Domain\Generic\BPM\Services;
 
 use BadMethodCallException;
 use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Promise\Utils;
 use Log;
 use Exception;
@@ -34,9 +35,6 @@ use function config;
  */
 abstract class Gateway
 {
-    /**
-     * @deprecated
-     */
     /**
      * @var string
      */
@@ -176,18 +174,12 @@ abstract class Gateway
 
             $this->payload = array_merge($this->payload, $params, ['bpm_trace_id' => $this->requestId]);
 
-            /**
-             * @deprecated
-             */
-            //while ($with = array_shift($options)) {
-            //    $this->{$with}();
-            //}
 
             if (!$inputType = (['post' => 'json', 'get' => 'query', 'delete' => 'query', 'put' => 'json'][strtolower($method)] ?? '')) {
                 throw new BadMethodCallException('不支持的请求方式');
             }
 
-            $url = config('app.bpm.engine_api') . $path;
+            $url = config('bpm.engine_api') . $path;
 
             $headers = [
                 'access_token' => $this->accessToken,
@@ -222,14 +214,16 @@ abstract class Gateway
             return $this->parse();
         } catch (Exception $e) {
             $message = '未知错误,请稍后再试！';
+            if ($e instanceof RequestException) {
+                $message = '工作流接口请求异常，请稍后！';
+            }
             if ($e instanceof ConnectException) {
-                $message = 'java工作流接口连接超时或异常[已重试：' . $this->retry . '次]，请稍后再试！';
+                $message = 'bpm工作流接口连接异常[已重试：' . $this->retry . '次]，请稍后再试！';
             }
             if ($e instanceof ClientException) {
-                $message = 'java工作流接口调用端异常，请检查！';
+                $message = 'bpm工作流接口调用异常，请稍后！';
             }
             $this->buffer('exception', $e->getMessage() . '|' . $e->getTraceAsString());
-            //throw new RuntimeException($message);
             abort(500, $message);
         }
     }
@@ -297,12 +291,13 @@ abstract class Gateway
      * @param array $data
      * @return string
      */
-    private function requestLogFormat(array $data): string
+    public function requestLogFormat(array $data): string
     {
         return implode(PHP_EOL, array_map(
                 function ($v, $k) {
                     $v = match (true) {
-                        is_array($v), is_object($v) => json_encode($v, JSON_UNESCAPED_UNICODE),
+                        is_array($v) && array_is_list($v) => implode(',', $v),
+                        is_array($v) && !array_is_list($v), is_object($v) => json_encode($v, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
                         is_bool($v) => $v ? 'true' : 'false',
                         default => $v,
                     };
@@ -343,7 +338,10 @@ abstract class Gateway
             $this->httpMessage[] = sprintf("\n=== exception[retry_times:%d] === \n%s ======",
                 $this->retry, $message
             );
-            $this->alarmMessage[] = sprintf('java二方bpm服务调用异常【 %s 】,=== context === %s', $message, json_encode($this->request));
+            $this->alarmMessage[] = sprintf("【java二方bpm服务调用异常】: \n=== CONTEXT ===\n %s \n=== ERROR ===\n %s",
+                'request:' . json_encode($this->request, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+                $message
+            );
             return;
         }
 
@@ -386,7 +384,7 @@ abstract class Gateway
                 'json' => [
                     "msgtype" => "text",
                     "text" => [
-                        "content" => substr($message, 0, 800)
+                        "content" => substr($message, 0, 1500) . '...'
                     ],
                     "at" => [
                         "atMobiles" => [],

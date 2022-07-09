@@ -19,11 +19,17 @@ class NotifyHandler
 {
     const IS_FINISHED = 1;
 
+    const IS_UNFINISHED = 0;
+
+    const SUBMITTED = 'submit';
+
     const AGREED = 'agree';
+
+    const DISAGREED = 'disagree';
 
     const REFUSED = 'refuse';
 
-    const CANCEL = 'cancel';
+    const CANCELLED = 'cancel';
 
     const PROCESSED = 'processed';
 
@@ -53,12 +59,24 @@ class NotifyHandler
      * @throws GuzzleException
      * @throws Throwable
      */
-    public function handle()
+    public function handle(): bool
     {
         try {
             $callbackDTO = $this->callbackDTO;
             $bpmTransaction = $this->callbackDTO->bpmTransaction;
             $this->callbackDTO->bpmTransaction = $bpmTransaction->toArray();
+
+            if ($callbackDTO->hasFinished == self::IS_UNFINISHED) {
+
+                if ($callbackDTO->dealResult == self::DISAGREED) {
+                    $this->sourceHandler->disagreeAndUnfinished();
+                }
+
+                if ($callbackDTO->dealResult == self::AGREED) {
+                    $this->sourceHandler->agreedAndUnfinished();
+                }
+
+            }
 
             if ($callbackDTO->hasFinished == self::IS_FINISHED) {
 
@@ -75,7 +93,7 @@ class NotifyHandler
                     $this->sourceHandler->refusedAndFinished();
                 }
 
-                if ($callbackDTO->dealResult == self::CANCEL) {
+                if ($callbackDTO->dealResult == self::CANCELLED) {
                     $this->sourceHandler->canceledAndFinished();
                 }
             }
@@ -85,8 +103,8 @@ class NotifyHandler
 
             $message = implode(PHP_EOL, [
                 "【Error】： bpm回调",
-                "【请求参数】：" . json_encode(app(Request::class)->input(), JSON_UNESCAPED_UNICODE),
-                "【异常信息】：" . mb_substr($e->getMessage(), 0, 500) . '...',
+                "【请求参数】：" . json_encode(app(Request::class)->input(), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT),
+                "【异常信息】：" . mb_substr($e->getMessage(), 0, 800) . '...',
             ]);
 
             Log::error($message);

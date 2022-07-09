@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property int $id
  * @property string $name 类型名称（业务线或其他）
  * @property string $code 模型
- * @property string $bpm_code 关联java bpm流程定义ID
+ * @property string $bpm_code 关联bpm流程唯一code，指向定义的最新版本流程
  * @property int $value 值
  * @property int $type 类型 enum 1:审核:EXAMINE,2:任务:TASK
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -44,6 +44,7 @@ class BusinessType extends Model
     protected $fillable = [
         'name', //类型名称（业务线或其他）
         'code', //编码
+        'bpm_code',
         'value', //值
         'type', //类型 enum 1:审核:EXAMINE,2:任务:TASK
         'created_at', //

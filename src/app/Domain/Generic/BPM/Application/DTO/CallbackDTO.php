@@ -36,14 +36,19 @@ class CallbackDTO
     public int $hasFinished;
 
     /**
-     * @var string 最后一个任务处理人id
+     * @var string 任务处理人id
      */
     public string $dealUserId;
 
     /**
-     * @var string 最后一个任务处理结果
+     * @var string 任务处理结果
      */
     public string $dealResult;
+
+    /**
+     * @var string 处理时间｜任务被处理的真实时间
+     */
+    public string $dealTime;
 
     /**
      * @var array 表单数据Map数组，

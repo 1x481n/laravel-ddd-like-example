@@ -8,23 +8,31 @@
 
 namespace App\Domain\Generic\BPM\Application\Services;
 
-//use App\Domain\Generic\BPM\Application\Jobs\QueueableClosure;
+
 use App\Domain\Generic\BPM\Models\BPMTransaction;
 use App\Domain\Generic\BPM\Services\SourceHandler;
-
-//use App\Domain\Generic\User\Services\UserService;
+use App\Domain\Generic\User\Services\UserService;
 use App\Models\Business\BusinessType;
-use App\Models\User;
 use Exception;
 use JetBrains\PhpStorm\ArrayShape;
-use Laravel\SerializableClosure\SerializableClosure;
+
 
 /**
  * 流程运行相关服务
  */
 class ProcessRunningService extends BaseService
 {
+    /**
+     * 是否启用异步
+     * @var bool
+     */
     private bool $async = false;
+
+    /**
+     * 是否执行首节点 默认true 查看审批流配置自己甄别
+     * @var bool
+     */
+    private bool $executeFirstNode = true;
 
     /**
      * 发起流程
@@ -46,12 +54,8 @@ class ProcessRunningService extends BaseService
      * @param array $ext 额外字段 ['ext1'=>,'ext2'=>,'ext3'=>]
      * @param string|null $title 可定制的审批标题，缺省取BusinessType的name
      * @param int|null $orgLevel 指定发起流程的组织层级 1总部 2大区 3门店
-     * @param bool $executeFirstNode 是否执行首节点 默认true 查看审批流配置自己甄别
      *
-     * @return array 返回说明：
-     * [
-     *  'bpm_transaction_sn'=>'本地bpm交易流水号'
-     * ]
+     * @return array
      * @throws Exception
      */
     #[ArrayShape(['bpm_transaction_sn' => "\Illuminate\Database\Eloquent\HigherOrderBuilderProxy|mixed|string", 'bpm_result' => "array"])]
@@ -68,13 +72,10 @@ class ProcessRunningService extends BaseService
         array         $ext = [],
         ?string       $title = null,
         ?int          $orgLevel = null,
-        bool          $executeFirstNode = true
     ): array
     {
         // 发起人相关信息
-        //$startUser = app(UserService::class)->getUserWithRoleDepartment($startUserId); //移除部分逻辑
-        // 假数据
-        $startUser = User::query()->find(1);
+        $startUser = app(UserService::class)->getUserWithRoleDepartment($startUserId); //移除部分逻辑
 
         // 维护本地bpm交易记录表
         $bpmTransaction = BPMTransaction::query()->create(
@@ -94,7 +95,7 @@ class ProcessRunningService extends BaseService
                     'formData' => $formData,
                     'variables' => [],
                     'ext' => $ext,
-                    'executeFirstNode' => $executeFirstNode
+                    'executeFirstNode' => $this->executeFirstNode
                 ],
                 'source_handler' => $sourceHandler,
             ]
@@ -138,9 +139,25 @@ class ProcessRunningService extends BaseService
         ];
     }
 
+    /**
+     * 开启异步
+     *
+     * @return $this
+     */
     public function async(): static
     {
         $this->async = true;
+        return $this;
+    }
+
+    /**
+     * 不执行首节点
+     *
+     * @return $this
+     */
+    public function unExecuteFirstNode(): static
+    {
+        $this->executeFirstNode = false;
         return $this;
     }
 
@@ -156,29 +173,21 @@ class ProcessRunningService extends BaseService
      */
     private function preStartProcess(BPMTransaction $bpmTransaction, &$nextUserVars, &$formData, &$copyIds)
     {
-        $nextUserVars = [];
+        $nextUserVars = $nextUserVars ?? [];
+        $formData = $formData ?? [];
+        $copyIds = $copyIds ?? [];
         // 远程调用
         $result = $this->engine->getProcessStartVar($bpmTransaction->process_code);
         if ($result) {
-            $nextRoleVars = $result['data']['nextRoleVars'] ?? [];
-            $copyRoleVar = $result['data']['copyRoleVar'] ?? [];
-            // 组装BPM所需变量参数(目前仅使用角色转人)
-            if ($nextRoleVars) {
-                $nextUserVars = $this->getNextUserVariables($nextRoleVars, $bpmTransaction->store_id, $bpmTransaction->area_id);
-            }
-            if ($copyRoleVar) {
-                $copyIds = array_unique(
-                    array_merge(
-                        $copyIds,
-                        $this->getNextUserVariables($copyRoleVar, $bpmTransaction->store_id, $bpmTransaction->area_id)['copyIds'] ?? []
-                    )
+            $varData = $result['data'] ?? [];
+            if ($varData) {
+                // 处理变量
+                $this->engine->handleVariables(
+                    $bpmTransaction, $varData, $this->getVarsRules($nextUserVars, $copyIds)
                 );
+                // 处理表单
+                $this->engine->handleForm($bpmTransaction, $varData, $formData);
             }
-            // 组装上下文表单
-            $nodeId = $result['data']['nodeId'] ?? '';
-
-            // 表单处理
-            $this->handleForm($bpmTransaction, $nodeId, $formData);
         }
     }
 

@@ -10,6 +10,7 @@ namespace App\Domain\Generic\BPM\Application\Services;
 
 use App\Domain\Generic\BPM\Models\BPMTransaction;
 //use App\Domain\Generic\User\Services\UserService; //已移除
+use App\Domain\Generic\User\Services\UserService;
 use Exception;
 
 /**
@@ -85,30 +86,29 @@ class TaskService extends BaseService
      */
     private function preHandleTodoTask($taskId, $userId, &$nextUserVars, &$user, &$formData, &$copyIds)
     {
-        $result = $this->engine->getProcessRuntimeVar($taskId);
-        $nodeId = $result['data']['nodeId'] ?? '';
-        $processInstanceId = $result['data']['processInstanceId'] ?? '';
-        $nextRoleVars = $result['data']['nextRoleVars'] ?? [];
-        $copyRoleVar = $result['data']['copyRoleVar'] ?? [];
-        $bpmTransaction = BPMTransaction::query()->whereTransactionNo($processInstanceId)->first();
-        if (!$bpmTransaction) {
-            abort(500,'本地审批交易数据不存在，请检查数据完整性！');
-        }
-        $nextUserVars = [];
-        if ($nextRoleVars){
-            $nextUserVars = $this->getNextUserVariables($nextRoleVars, $bpmTransaction->store_id, $bpmTransaction->area_id);
-        }
-        if($copyRoleVar){
-            $copyIds = array_unique(
-                array_merge(
-                    $copyIds,
-                    $this->getNextUserVariables($copyRoleVar, $bpmTransaction->store_id, $bpmTransaction->area_id)['copyIds'] ?? []
-                )
-            );
-        }
+        $nextUserVars = $nextUserVars ?? [];
+        $formData = $formData ?? [];
+        $copyIds = $copyIds ?? [];
+        $user = app(UserService::class)->getUserWithRoleDepartment($userId);
 
-        //$user = app(UserService::class)->getUserWithRoleDepartment($userId); // 已移除依赖的用户服务
-        $this->handleForm($bpmTransaction, $nodeId, $formData);
+        $result = $this->engine->getProcessRuntimeVar($taskId);
+        if ($result) {
+            $varData = $result['data'] ?? [];
+            $processInstanceId = $result['data']['processInstanceId'] ?? '';
+            if (!$processInstanceId) {
+                abort(500,'审批流程异常，流程实例不存在，请稍后！');
+            }
+            $bpmTransaction = BPMTransaction::query()->whereTransactionNo($processInstanceId)->first();
+            if (!$bpmTransaction) {
+                abort(500,'本地审批交易数据不存在，请检查数据完整性！');
+            }
+            // 处理变量
+            $this->engine->handleVariables(
+                $bpmTransaction, $varData, $this->getVarsRules($nextUserVars, $copyIds)
+            );
+            // 处理表单
+            $this->engine->handleForm($bpmTransaction, $varData, $formData);
+        }
     }
 
 

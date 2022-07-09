@@ -15,19 +15,19 @@ use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Log;
+use stdClass;
 use Throwable;
 
 
 class BPMController extends Controller
 {
 
-    public function test()
+    public function test(): string
     {
-
-        dispatch(function (){
-            \Log::debug('bpm.test');
-        });
-
+        //dispatch(function (){
+        //    Log::debug('bpm.test');
+        //});
         return 'bpm.test';
     }
 
@@ -127,7 +127,7 @@ class BPMController extends Controller
     private function response($bpmResponse): JsonResponse
     {
         $code = $bpmResponse['code'] ?? -1;
-        $data = $bpmResponse['data'] ?? new \stdClass();
+        $data = $bpmResponse['data'] ?? new stdClass();
         $bpmMessage = $bpmResponse['message'] ?? '';
         if ($code == 0) {
             return response()->json($data);
