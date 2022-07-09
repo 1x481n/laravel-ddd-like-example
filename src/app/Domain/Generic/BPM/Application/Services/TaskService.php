@@ -9,7 +9,6 @@
 namespace App\Domain\Generic\BPM\Application\Services;
 
 use App\Domain\Generic\BPM\Models\BPMTransaction;
-//use App\Domain\Generic\User\Services\UserService; //已移除
 use App\Domain\Generic\User\Services\UserService;
 use Exception;
 
@@ -31,7 +30,7 @@ class TaskService extends BaseService
      */
     public function agreeTodoTask(string $taskId, int $userId, array $formData = [], string $remark = '', array $copyIds = []): array
     {
-        $this->preHandleTodoTask($taskId, $userId, $nextUserVars, $user,$formData,$copyIds);
+        $this->preHandleTodoTask($taskId, $userId, $nextUserVars, $user, $formData, $copyIds);
         return $this->engine->agreeTodoTask($taskId, $user, $remark, ['variables' => $nextUserVars, 'formDataMap' => $formData], [], $copyIds);
     }
 
@@ -49,7 +48,7 @@ class TaskService extends BaseService
      */
     public function resubmitTodoTask(string $taskId, int $userId, array $formData = [], string $remark = '', array $copyIds = []): array
     {
-        $this->preHandleTodoTask($taskId,$userId,$nextUserVars,$user,$formData,$copyIds);
+        $this->preHandleTodoTask($taskId, $userId, $nextUserVars, $user, $formData, $copyIds);
         return $this->engine->resubmitTodoTask($taskId, $user, $formData, $remark, [], $copyIds);
     }
 
@@ -65,9 +64,9 @@ class TaskService extends BaseService
      * @return array
      * @throws Exception
      */
-    public function refuseTodoTask(string $taskId, int $userId, array $formData = [], string $remark = '',array $copyIds = []): array
+    public function refuseTodoTask(string $taskId, int $userId, array $formData = [], string $remark = '', array $copyIds = []): array
     {
-        $this->preHandleTodoTask($taskId, $userId, $nextUserVars, $user, $formData,$copyIds);
+        $this->preHandleTodoTask($taskId, $userId, $nextUserVars, $user, $formData, $copyIds);
         return $this->engine->refuseTodoTask($taskId, $user, $remark, ['variables' => $nextUserVars, 'formDataMap' => $formData], [], $copyIds);
     }
 
@@ -96,11 +95,11 @@ class TaskService extends BaseService
             $varData = $result['data'] ?? [];
             $processInstanceId = $result['data']['processInstanceId'] ?? '';
             if (!$processInstanceId) {
-                abort(500,'审批流程异常，流程实例不存在，请稍后！');
+                abort(500, '审批流程异常，流程实例不存在，请稍后！');
             }
             $bpmTransaction = BPMTransaction::query()->whereTransactionNo($processInstanceId)->first();
             if (!$bpmTransaction) {
-                abort(500,'本地审批交易数据不存在，请检查数据完整性！');
+                abort(500, '本地审批交易数据不存在，请检查数据完整性！');
             }
             // 处理变量
             $this->engine->handleVariables(
