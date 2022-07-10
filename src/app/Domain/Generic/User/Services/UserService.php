@@ -25,9 +25,13 @@ class UserService
      * 根据角色获取用户ID
      *
      */
-    public function getUserIdsByRole(int $storeId, int $areaId, array $roleIds)
+    public function getUserIdsByRole(int $storeId, int $areaId, array $roleIds): array
     {
-
+        // 假数据
+        return [
+            18 => [1, 2, 3],
+            30 => [4, 5, 6],
+        ];
     }
 
     /**
@@ -43,11 +47,11 @@ class UserService
 
             public function __construct()
             {
-                $this->department=(object)[
+                $this->department = (object)[
                     "id" => 1,
                     "name" => "总裁办",
                 ];
-                $this->currentRole=(object)[
+                $this->currentRole = (object)[
                     "id" => 1,
                     "name" => "超级管理员",
                     "department_id" => 1,

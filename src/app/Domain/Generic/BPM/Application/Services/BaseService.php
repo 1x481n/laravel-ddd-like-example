@@ -31,6 +31,7 @@ class BaseService
     }
 
     /**
+     * @desc 引入的由他人编写的外部依赖方法
      * 获取下个节点的审核用户
      *
      * @param array $nodeRoleVars
