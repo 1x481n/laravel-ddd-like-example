@@ -14,6 +14,7 @@ use App\Domain\Generic\BPM\Services\SourceHandler;
 use App\Domain\Generic\User\Services\UserService;
 use App\Models\Business\BusinessType;
 use Exception;
+use GuzzleHttp\Client as GuzzleHttpClient;
 use JetBrains\PhpStorm\ArrayShape;
 
 
@@ -77,6 +78,10 @@ class ProcessRunningService extends BaseService
         // 发起人相关信息
         $startUser = app(UserService::class)->getUserWithRoleDepartment($startUserId); //移除部分逻辑
 
+        if (!$startUser) {
+            abort(500, '流程发起失败，找不到发起人！');
+        }
+
         // 维护本地bpm交易记录表
         $bpmTransaction = BPMTransaction::query()->create(
             [
@@ -85,7 +90,7 @@ class ProcessRunningService extends BaseService
                 'source_type' => $bizType->value,
                 'source_id' => $sourceId,
                 'source_no' => $sourceNo,
-                'org_level' => $orgLevel ?: $startUser->currentRole->type,
+                'org_level' => $orgLevel ?: $startUser->currentRole->type ?? 0,
                 'store_id' => $storeId,
                 'area_id' => $areaId,
                 'start_user_id' => $startUserId,
@@ -114,7 +119,29 @@ class ProcessRunningService extends BaseService
             $transactionSnapshot['copyIds'] = $copyIds;
             $bpmTransaction->fill(['transaction_snapshot' => $transactionSnapshot])->save();
             // 远程调用
-            return $this->engine->startProcess($bpmTransaction);
+            $result = $this->engine->startProcess($bpmTransaction);
+
+            // 不管同步异步，均可告警
+            if ($result['code'] != 0) {
+                app(GuzzleHttpClient::class)->post(config('bpm.ding_alarm_url'), [
+                    'json' => [
+                        "msgtype" => "text",
+                        "text" => [
+                            "content" => implode(PHP_EOL,
+                                [
+                                    '【Context】：' . implode('', $this->engine->getHttpMessage()),
+                                    '【Error】：' . ($result['message'] ?? '未知错误！'),
+                                ]
+                            )
+                        ],
+                        "at" => [
+                            "atMobiles" => [],
+                            "isAtAll" => false
+                        ]
+                    ]
+                ]);
+            }
+            return $result;
         };
 
         if ($this->async) {
@@ -127,8 +154,9 @@ class ProcessRunningService extends BaseService
         } else {
             // 同步
             $bpmResult = $processing();
+            // 同步操作同时向上抛异常！
             if ($bpmResult['code'] != 0) {
-                abort(500, '工作流服务：' . $bpmResult['message'] ?? '未知错误！');
+                abort(500, $error = '工作流服务：' . $bpmResult['message'] ?? '未知错误！');
             }
         }
 

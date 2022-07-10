@@ -255,6 +255,16 @@ abstract class Gateway
     }
 
     /**
+     * 暴露当前已缓存的http报文
+     *
+     * @return array
+     */
+    public function getHttpMessage(): array
+    {
+        return $this->httpMessage;
+    }
+
+    /**
      * @param $method
      * @param $parameters
      * @return array
@@ -354,7 +364,7 @@ abstract class Gateway
                 "\n=== response ===\nstatus: %s %s\n== headers ==\n%s\n== content ==\n%s\n",
                 $statusCode, $statusPhrase, $responseHeaders, $content
             );
-            $this->httpMessage[] = sprintf("\n====== end: activiti-http-service bpm_trace_id[%s] ======\n",
+            $this->httpMessage[] = sprintf("====== end: activiti-http-service bpm_trace_id[%s] ======\n",
                 $this->requestId
             );
         }
@@ -384,7 +394,7 @@ abstract class Gateway
                 'json' => [
                     "msgtype" => "text",
                     "text" => [
-                        "content" => substr($message, 0, 1500) . '...'
+                        "content" => mb_substr($message, 0, 1500)
                     ],
                     "at" => [
                         "atMobiles" => [],

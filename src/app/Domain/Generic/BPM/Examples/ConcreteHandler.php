@@ -111,6 +111,9 @@ class ConcreteHandler extends SourceHandler implements ShouldValidateInputForm, 
 
         Log::channel('bpm')->debug(var_export([__METHOD__, 'nodeId' => $nodeId, 'dynamicVar' => $dynamicVar, 'storeId' => $storeId], true));
 
+        // 保证属性通过运行初始化检查
+        $this->bizStoreId = $storeId;
+
         return $storeId;
     }
 
