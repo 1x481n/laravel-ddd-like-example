@@ -17,7 +17,7 @@ use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
 
-/* @mixin HttpClient */
+/* @mixin NetworkInterface */
 class Engine
 {
     public const PENDING_START = 'pending_start';
@@ -36,9 +36,9 @@ class Engine
         'copyRoleVar'
     ];
 
-    private HttpClient $httpClient;
+    private NetworkInterface $httpClient;
 
-    public function __construct(HttpClient $httpClient)
+    public function __construct(NetworkInterface $httpClient)
     {
         $this->httpClient = $httpClient;
     }
@@ -136,7 +136,7 @@ class Engine
      * @return HttpClient
      * @throws Exception
      */
-    public function authorize(): HttpClient
+    public function authorize(): NetworkInterface
     {
         if (!$this->httpClient->accessToken = (string)Cache::get('bpm:access_token')) {
 
@@ -238,4 +238,8 @@ class Engine
         return $this->httpClient->{$method}(...$parameters);
     }
 
+    public function __destruct()
+    {
+        app()->forgetInstance(NetworkInterface::class);
+    }
 }

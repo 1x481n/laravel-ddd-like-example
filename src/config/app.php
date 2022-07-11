@@ -194,7 +194,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        // BPM服务
+        App\Domain\Generic\BPM\BPMServiceProvider::class,
     ],
 
     /*

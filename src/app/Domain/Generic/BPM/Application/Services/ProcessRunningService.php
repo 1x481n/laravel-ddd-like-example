@@ -15,6 +15,7 @@ use App\Domain\Generic\User\Services\UserService;
 use App\Models\Business\BusinessType;
 use Exception;
 use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Exception\GuzzleException;
 use JetBrains\PhpStorm\ArrayShape;
 
 
@@ -57,7 +58,7 @@ class ProcessRunningService extends BaseService
      * @param int|null $orgLevel 指定发起流程的组织层级 1总部 2大区 3门店
      *
      * @return array
-     * @throws Exception
+     * @throws Exception|GuzzleException
      */
     #[ArrayShape(['bpm_transaction_sn' => "\Illuminate\Database\Eloquent\HigherOrderBuilderProxy|mixed|string", 'bpm_result' => "array"])]
     public function startProcess

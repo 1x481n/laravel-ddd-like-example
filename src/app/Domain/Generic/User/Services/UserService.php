@@ -64,7 +64,7 @@ class UserService
                     "user_id" => 1,
                     "store_id" => 0,
                     "role_id" => 1,
-                    "dhf_area_id" => 0,
+                    "area_id" => 0,
                     "identity" => 1,
                     "card_num" => "",
                     "email" => "11111111@qq.com",

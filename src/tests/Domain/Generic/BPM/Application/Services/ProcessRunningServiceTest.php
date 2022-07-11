@@ -19,7 +19,7 @@ class ProcessRunningServiceTest extends TestCase
 
     /**
      * @return void
-     * @throws Exception
+     * @throws Exception|\GuzzleHttp\Exception\GuzzleException
      */
     public function testStartProcess()
     {
@@ -36,10 +36,9 @@ class ProcessRunningServiceTest extends TestCase
                 'apply_amount' => '6000.00'
             ],
             ['ext1' => '扩展1'],
-            '地振高冈'
+            'enjoy yourself!'
         );
 
         $this->assertArrayHasKey('bpm_transaction_sn', $result,'发起流程测试用例运行失败！');
-
     }
 }

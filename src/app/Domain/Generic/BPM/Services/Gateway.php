@@ -33,7 +33,7 @@ use function config;
  * @method put(string $path, array $params = [], array $options = [])
  * @method delete(string $path, array $params = [], array $options = [])
  */
-abstract class Gateway
+abstract class Gateway implements NetworkInterface
 {
     /**
      * @var string
@@ -160,7 +160,7 @@ abstract class Gateway
      * @param array $params
      * @param array $options
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     public function request(string $method, string $path, array $params = [], array $options = []): array
     {
@@ -417,6 +417,4 @@ abstract class Gateway
         $this->flush();
         $this->alarm();
     }
-
-
 }
