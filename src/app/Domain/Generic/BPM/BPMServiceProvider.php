@@ -20,8 +20,6 @@ class BPMServiceProvider extends ServiceProvider implements DeferrableProvider
      */
     public function register()
     {
-        dump(__METHOD__);
-
         $networkInterface = config('bpm.network_interface');
         if ($networkInterface == 'http') {
             $concrete = HttpClient::class;
