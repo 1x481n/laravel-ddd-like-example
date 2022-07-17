@@ -50,10 +50,15 @@ class MockClient implements NetworkInterface
     /**
      * @return array
      */
+    #[ArrayShape(['code' => "int", 'data' => "object", 'message' => "\mixed|string"])]
     public function getAccessToken(): array
     {
-        //TODO:
-        return [];
+        return $this->mockResponseData(
+            [
+                'accessToken' => md5(microtime()),
+                'expireTime' => date('Y-m-d H:i:s', time() + 7200),
+            ]
+        );
     }
 
     /**
@@ -130,7 +135,7 @@ class MockClient implements NetworkInterface
     {
         return $this->mockResponseData(
             [
-                'processInstanceId' => microtime(true) * 1000,
+                'processInstanceId' => floor(microtime(true) * 1000),
                 'processNo' => '2022071014270082379'
             ],
             '流程发起成功'

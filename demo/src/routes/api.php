@@ -19,4 +19,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-require_once 'generic.php';
+
+require base_path('routes/generic.php');
