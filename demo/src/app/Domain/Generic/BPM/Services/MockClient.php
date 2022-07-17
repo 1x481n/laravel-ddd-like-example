@@ -130,7 +130,7 @@ class MockClient implements NetworkInterface
     {
         return $this->mockResponseData(
             [
-                'processInstanceId' => 'mock_processInstanceId_007',
+                'processInstanceId' => microtime(true) * 1000,
                 'processNo' => '2022071014270082379'
             ],
             '流程发起成功'

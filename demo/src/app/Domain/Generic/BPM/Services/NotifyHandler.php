@@ -109,7 +109,7 @@ class NotifyHandler
 
             Log::error($message);
 
-            app(GuzzleHttpClient::class)->post(config('app.bpm.ding_alarm_url'), [
+            app(GuzzleHttpClient::class)->post(config('bpm.ding_alarm_url'), [
                 'json' => [
                     "msgtype" => "text",
                     "text" => ["content" => $message],
