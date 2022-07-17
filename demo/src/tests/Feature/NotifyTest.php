@@ -10,6 +10,7 @@ class NotifyTest extends TestCase
 {
     /**
      * A basic feature test example.
+     * 注意laravel最新版的artisan生成的测试用例，使用下划线命名取代小驼峰
      *
      * @return void
      */
