@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Request;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -45,6 +46,13 @@ class Handler extends ExceptionHandler
     {
         $this->reportable(function (Throwable $e) {
             //
+        });
+
+        $this->renderable(function (Throwable $e,Request $request){
+            if ($request->is('api/*')) {
+                $code = method_exists($e, 'getStatusCode') ? $e->getStatusCode() : 505;
+                return response($e->getMessage(), $code);
+            }
         });
     }
 }
