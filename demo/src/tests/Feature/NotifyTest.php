@@ -10,7 +10,9 @@ class NotifyTest extends TestCase
 {
     /**
      * A basic feature test example.
-     * 注意laravel最新版的artisan生成的测试用例，使用下划线命名取代小驼峰
+     * 注意新版的laravel使用artisan生成的测试用例，将使用下划线命名取代小驼峰，似乎是新标准
+     * @link https://github.com/laravel/laravel/pull/5574
+     * @link https://github.com/alexeymezenin/laravel-best-practices/issues/28
      *
      * @return void
      */
