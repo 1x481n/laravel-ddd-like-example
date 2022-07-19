@@ -6,8 +6,9 @@
  * Time: 6:53 PM
  */
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Gateway;
 
+use App\Domain\Generic\BPM\Domain\Interface\NetworkInterface;
 use App\Models\UserAdmin;
 use App\Utils\UUID;
 use JetBrains\PhpStorm\ArrayShape;

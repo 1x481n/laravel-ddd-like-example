@@ -10,7 +10,7 @@ namespace App\Domain\Generic\BPM\Application\Services;
 
 
 use App\Domain\Generic\BPM\Models\BPMTransaction;
-use App\Domain\Generic\BPM\Services\SourceHandler;
+use App\Domain\Generic\BPM\Domain\Interface\SourceHandler;
 use App\Domain\Generic\User\Services\UserService;
 use App\Models\Business\BusinessType;
 use Exception;

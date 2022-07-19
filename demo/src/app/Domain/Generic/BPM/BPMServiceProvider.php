@@ -2,9 +2,10 @@
 
 namespace App\Domain\Generic\BPM;
 
-use App\Domain\Generic\BPM\Services\HttpClient;
-use App\Domain\Generic\BPM\Services\MockClient;
-use App\Domain\Generic\BPM\Services\NetworkInterface;
+
+use App\Domain\Generic\BPM\Domain\Gateway\HttpClient;
+use App\Domain\Generic\BPM\Domain\Gateway\MockClient;
+use App\Domain\Generic\BPM\Domain\Interface\NetworkInterface;
 use Exception;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider;

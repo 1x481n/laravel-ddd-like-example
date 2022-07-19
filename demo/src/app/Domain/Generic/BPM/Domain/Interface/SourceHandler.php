@@ -6,7 +6,7 @@
  * Time: 4:25 PM
  */
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Interface;
 
 use App\Domain\Generic\BPM\Application\DTO\CallbackDTO;
 
@@ -36,6 +36,27 @@ abstract class SourceHandler
      * @return void
      */
     public function disagreeAndUnfinished()
+    {
+
+    }
+
+    /**
+     * 已提交且已完成｜提交后自动完成（不需要审批通过，属于流程固有配置，区分于通过且完成的场景）
+     *
+     * @return void
+     */
+
+    public function submittedAndFinished()
+    {
+
+    }
+
+    /**
+     * 重新提交且已完成｜重新提交后自动完成 （不需要审批通过，属于流程固有配置，区分于通过且完成的场景）
+     *
+     * @return void
+     */
+    public function resubmittedAndFinished()
     {
 
     }

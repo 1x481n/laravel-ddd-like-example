@@ -8,10 +8,11 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Gateway;
 
 
 use App\Domain\Generic\BPM\Models\BPMTransaction;
+use App\Domain\Generic\BPM\Domain\Interface\NetworkInterface;
 use Cache;
 use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;

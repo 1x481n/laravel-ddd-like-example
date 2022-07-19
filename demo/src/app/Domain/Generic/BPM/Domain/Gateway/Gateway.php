@@ -8,9 +8,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Gateway;
 
 
+use App\Domain\Generic\BPM\Domain\Interface\NetworkInterface;
 use BadMethodCallException;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\RequestException;

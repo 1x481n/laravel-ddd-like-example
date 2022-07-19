@@ -6,15 +6,19 @@
  * Time: 9:35 AM
  */
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Notify;
 
 use App\Domain\Generic\BPM\Application\DTO\CallbackDTO;
+use App\Domain\Generic\BPM\Domain\Interface\SourceHandler;
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Log;
 use Throwable;
 
+/**
+ * @deprecated
+ */
 class NotifyHandler
 {
     const IS_FINISHED = 1;
@@ -22,6 +26,8 @@ class NotifyHandler
     const IS_UNFINISHED = 0;
 
     const SUBMITTED = 'submit';
+
+    const RESUBMITTED = 'resubmit';
 
     const AGREED = 'agree';
 

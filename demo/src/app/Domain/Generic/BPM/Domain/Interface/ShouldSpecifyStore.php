@@ -6,7 +6,7 @@
  * Time: 9:01 PM
  */
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Interface;
 
 use App\Domain\Generic\BPM\Models\BPMTransaction;
 

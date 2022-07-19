@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Gateway;
 
 
 use App\Models\UserAdmin;

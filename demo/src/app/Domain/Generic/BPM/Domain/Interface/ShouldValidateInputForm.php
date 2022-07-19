@@ -6,7 +6,7 @@
  * Time: 4:40 PM
  */
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Interface;
 
 
 use Exception;

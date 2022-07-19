@@ -9,9 +9,9 @@
 namespace App\Domain\Generic\BPM\Application\Services;
 
 use App\Domain\Generic\BPM\Models\BPMTransaction;
-use App\Domain\Generic\BPM\Services\Engine;
-use App\Domain\Generic\BPM\Services\ShouldValidateInputForm;
-use App\Domain\Generic\BPM\Services\WithContextFormMap;
+use App\Domain\Generic\BPM\Domain\Gateway\Engine;
+use App\Domain\Generic\BPM\Domain\Interface\ShouldValidateInputForm;
+use App\Domain\Generic\BPM\Domain\Interface\WithContextFormMap;
 use App\Domain\Generic\User\Services\UserService;
 use Closure;
 use Exception;

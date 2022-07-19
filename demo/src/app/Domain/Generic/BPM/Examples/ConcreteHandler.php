@@ -9,10 +9,10 @@
 namespace App\Domain\Generic\BPM\Examples;
 
 use App\Domain\Generic\BPM\Models\BPMTransaction;
-use App\Domain\Generic\BPM\Services\ShouldSpecifyStore;
-use App\Domain\Generic\BPM\Services\ShouldValidateInputForm;
-use App\Domain\Generic\BPM\Services\SourceHandler;
-use App\Domain\Generic\BPM\Services\WithContextFormMap;
+use App\Domain\Generic\BPM\Domain\Interface\ShouldSpecifyStore;
+use App\Domain\Generic\BPM\Domain\Interface\ShouldValidateInputForm;
+use App\Domain\Generic\BPM\Domain\Interface\SourceHandler;
+use App\Domain\Generic\BPM\Domain\Interface\WithContextFormMap;
 use Log;
 
 /**
@@ -30,7 +30,7 @@ class ConcreteHandler extends SourceHandler implements ShouldValidateInputForm, 
     {
         echo '审批通过已经结束流程，业务侧定制的处理逻辑' . PHP_EOL;
         //dump('审批通过已经结束流程，业务侧定制的处理逻辑');
-        dump($this->callbackDTO);
+        //dump($this->callbackDTO);
     }
 
     /**

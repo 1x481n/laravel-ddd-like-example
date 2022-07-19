@@ -6,7 +6,7 @@
  * Time: 10:58 AM
  */
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Interface;
 
 interface ShouldConvertUserVar
 {

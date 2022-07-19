@@ -6,7 +6,7 @@
  * Time: 2:44 PM
  */
 
-namespace App\Domain\Generic\BPM\Services;
+namespace App\Domain\Generic\BPM\Domain\Interface;
 
 use App\Models\UserAdmin;
 
