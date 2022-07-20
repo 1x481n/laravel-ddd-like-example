@@ -54,7 +54,6 @@ class NotifyHandlerContext
     {
         try {
             $this->stateMachine->handle();
-            $this->callbackDTO->bpmTransaction = $this->callbackDTO->bpmTransaction->toArray();
             return true;
         } catch (Throwable $e) {
             throw new NotifyException($e->getMessage(), $e->getCode(), $e);
