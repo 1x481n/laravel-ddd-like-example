@@ -9,7 +9,7 @@
 namespace App\Domain\Generic\BPM\Application\Services;
 
 use App\Domain\Generic\BPM\Models\BPMTransaction;
-use App\Domain\Generic\BPM\Domain\Gateway\Engine;
+use App\Domain\Generic\BPM\Domain\Driver\Engine;
 use App\Domain\Generic\BPM\Domain\Interface\ShouldValidateInputForm;
 use App\Domain\Generic\BPM\Domain\Interface\WithContextFormMap;
 use App\Domain\Generic\User\Services\UserService;
@@ -110,10 +110,12 @@ class BaseService
             'copyRoleVarRule' => function ($var, $storeId, $areaId) use (&$copyIds) {
                 $var = $var ?: [];
                 // 抄送角色转抄送人
-                $copyIds = array_unique(
-                    array_merge(
-                        $copyIds,
-                        $this->getNextUserVariables($var, $storeId, $areaId)['copyIds'] ?? []
+                $copyIds = array_values(
+                    array_unique(
+                        array_merge(
+                            $copyIds,
+                            $this->getNextUserVariables($var, $storeId, $areaId)['copyIds'] ?? []
+                        )
                     )
                 );
             }

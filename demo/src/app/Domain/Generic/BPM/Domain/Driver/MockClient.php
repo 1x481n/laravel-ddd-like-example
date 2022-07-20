@@ -6,7 +6,7 @@
  * Time: 6:53 PM
  */
 
-namespace App\Domain\Generic\BPM\Domain\Gateway;
+namespace App\Domain\Generic\BPM\Domain\Driver;
 
 use App\Domain\Generic\BPM\Domain\Interface\NetworkInterface;
 use App\Models\UserAdmin;

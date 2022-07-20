@@ -8,7 +8,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Generic\BPM\Domain\Gateway;
+namespace App\Domain\Generic\BPM\Domain\Driver;
 
 
 use App\Models\UserAdmin;

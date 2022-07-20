@@ -3,8 +3,8 @@
 namespace App\Domain\Generic\BPM;
 
 
-use App\Domain\Generic\BPM\Domain\Gateway\HttpClient;
-use App\Domain\Generic\BPM\Domain\Gateway\MockClient;
+use App\Domain\Generic\BPM\Domain\Driver\HttpClient;
+use App\Domain\Generic\BPM\Domain\Driver\MockClient;
 use App\Domain\Generic\BPM\Domain\Interface\NetworkInterface;
 use Exception;
 use Illuminate\Contracts\Support\DeferrableProvider;
