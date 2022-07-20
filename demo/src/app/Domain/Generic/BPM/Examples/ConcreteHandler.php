@@ -30,7 +30,7 @@ class ConcreteHandler extends SourceHandler implements ShouldValidateInputForm, 
     {
         echo '审批通过已经结束流程，业务侧定制的处理逻辑' . PHP_EOL;
         //dump('审批通过已经结束流程，业务侧定制的处理逻辑');
-        //dump($this->callbackDTO);
+        dump($this->callbackDTO);
     }
 
     /**
