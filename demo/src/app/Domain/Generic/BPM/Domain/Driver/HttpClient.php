@@ -11,8 +11,6 @@ declare(strict_types=1);
 namespace App\Domain\Generic\BPM\Domain\Driver;
 
 
-use App\Models\UserAdmin;
-
 class HttpClient extends Gateway
 {
     /**
@@ -38,7 +36,6 @@ class HttpClient extends Gateway
     {
         return $this->get('/bpm/process/var/get', ['processDefinitionId' => $processDefinitionId]);
     }
-
 
 
     /**
@@ -88,7 +85,6 @@ class HttpClient extends Gateway
     }
 
 
-
     /**
      * 获取流程发起时表单
      * @desc 二次过滤给前端，客户填写表单内容
@@ -100,7 +96,6 @@ class HttpClient extends Gateway
     {
         return $this->get('/bpm/form/start/get', ['processUniqueCode' => $processUniqueCode]);
     }
-
 
 
     /**
@@ -122,7 +117,7 @@ class HttpClient extends Gateway
      * @param bool $executeFirstNode 默认执行首节点
      * @return array
      */
-    public function startProcess(string $processUniqueCode, array $startUser, array $formVars = [], array $ext = [], array $copyIds=[], bool $executeFirstNode = true): array
+    public function startProcess(string $processUniqueCode, array $startUser, array $formVars = [], array $ext = [], array $copyIds = [], bool $executeFirstNode = true): array
     {
         return $this->withRuntime(
             array_merge($formVars, $ext)
@@ -145,7 +140,7 @@ class HttpClient extends Gateway
      * （被驳回到发起人）重新提交
      *
      * @param string $taskId
-     * @param UserAdmin $startUser
+     * @param object $startUser
      * @param array $formVars
      * @param string $remark
      * @param array $ext
@@ -153,7 +148,7 @@ class HttpClient extends Gateway
      * @return array
      *
      */
-    public function resubmitTodoTask(string $taskId, UserAdmin $startUser, array $formVars = [], string $remark = '', array $ext = [],array $copyIds = []): array
+    public function resubmitTodoTask(string $taskId, object $startUser, array $formVars = [], string $remark = '', array $ext = [], array $copyIds = []): array
     {
         return $this->withRuntime(
             array_merge($formVars, $ext)
@@ -174,14 +169,14 @@ class HttpClient extends Gateway
      * 审批通过
      *
      * @param string $taskId
-     * @param UserAdmin $operator
+     * @param object $operator
      * @param string $remark
      * @param array $formVars
      * @param array $ext
      * @param array $copyIds
      * @return array
      */
-    public function agreeTodoTask(string $taskId, UserAdmin $operator, string $remark = '', array $formVars = [], array $ext = [], array $copyIds = []): array
+    public function agreeTodoTask(string $taskId, object $operator, string $remark = '', array $formVars = [], array $ext = [], array $copyIds = []): array
     {
         return $this->withRuntime(
             array_merge($formVars, $ext)
@@ -200,19 +195,18 @@ class HttpClient extends Gateway
     }
 
 
-
     /**
      * 审批拒绝
      *
      * @param string $taskId
-     * @param UserAdmin $operator
+     * @param object $operator
      * @param string $remark
      * @param array $formVars
      * @param array $ext
      * @param array $copyIds
      * @return array
      */
-    public function refuseTodoTask(string $taskId, UserAdmin $operator, string $remark = '', array $formVars = [], array $ext = [], array $copyIds = []): array
+    public function refuseTodoTask(string $taskId, object $operator, string $remark = '', array $formVars = [], array $ext = [], array $copyIds = []): array
     {
         return $this->withRuntime(
             array_merge($formVars, $ext)
@@ -222,7 +216,7 @@ class HttpClient extends Gateway
                 'userId' => $operator->id,
                 'userName' => $operator->nickname,
                 'userGroups' => $operator->currentRole->name,
-                'deptId'=> $operator->currentRole->department->id,
+                'deptId' => $operator->currentRole->department->id,
                 'remark' => $remark,
                 'copyIds' => $copyIds,
             ]
