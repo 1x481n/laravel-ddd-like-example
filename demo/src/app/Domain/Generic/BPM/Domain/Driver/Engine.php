@@ -11,6 +11,9 @@ declare(strict_types=1);
 namespace App\Domain\Generic\BPM\Domain\Driver;
 
 
+use App\Domain\Generic\BPM\Domain\Interface\ShouldSpecifyStore;
+use App\Domain\Generic\BPM\Domain\Interface\ShouldValidateInputForm;
+use App\Domain\Generic\BPM\Domain\Interface\WithContextFormMap;
 use App\Domain\Generic\BPM\Models\BPMTransaction;
 use App\Domain\Generic\BPM\Domain\Interface\NetworkInterface;
 use Cache;
