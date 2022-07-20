@@ -22,5 +22,7 @@ class FinishedState extends StateMachine
         $bpmTransaction->process_result = $this->notifyHandlerContext->callbackDTO->dealResult;
         $bpmTransaction->finish_at = date('Y-m-d H:i:s');
         $bpmTransaction->save();
+
+        $this->notifyHandlerContext->callbackDTO->bpmTransaction = $bpmTransaction->toArray();
     }
 }

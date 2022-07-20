@@ -19,7 +19,7 @@ class NotifyTest extends TestCase
     public function test_bpm_notify()
     {
         $response = $this->post('/api/bpm/notify',[
-            'dealResult' => 'cancel',
+            'dealResult' => 'agree',
             'dealUserId' => '666',
             'hasFinished' => 1,
             'nextTasks' =>[],
