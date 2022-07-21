@@ -16,6 +16,7 @@ use App\Domain\Generic\BPM\Domain\Notify\State\RefusedState;
 use App\Domain\Generic\BPM\Domain\Notify\State\ResubmittedState;
 use App\Domain\Generic\BPM\Domain\Notify\State\StateMachine;
 use App\Domain\Generic\BPM\Domain\Notify\State\SubmittedState;
+use Arr;
 use Log;
 use Closure;
 use App\Utils\ObjectUtil;
@@ -23,6 +24,9 @@ use Illuminate\Http\Request;
 use App\Domain\Generic\BPM\Models\BPMTransaction;
 use App\Domain\Generic\BPM\Application\DTO\CallbackDTO;
 use App\Domain\Generic\BPM\Domain\Interface\SourceHandler;
+use Str;
+
+//use function Sodium\crypto_pwhash_scryptsalsa208sha256_str;
 
 
 class BeforeNotifyMiddleware
@@ -55,13 +59,25 @@ class BeforeNotifyMiddleware
     }
 
     /**
-     * TODO:
      *
      * @return bool
      */
     private function checkSign(): bool
     {
-        return true;
+        if (abs(time() - (int)\Request::input('timestamp') > 120)) {
+            abort(500, '请求已过期，无效时间戳！');
+        }
+
+        $inputSign = \Request::input('sign');
+
+        $bpmSecret = config('bpm.app_secret');
+        $input = \Request::except(['request_id', 'timestamp', 'sign']);
+        $sortedInput = Arr::sortRecursive($input);
+        $str = $bpmSecret . json_encode($sortedInput, JSON_UNESCAPED_UNICODE);
+
+        $sign = hash('sha256', $str);
+
+        return $inputSign == $sign;
     }
 
     /**
